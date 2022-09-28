@@ -2,7 +2,7 @@
 
 A [NeosModLoader](https://github.com/zkxs/NeosModLoader) mod for [Neos VR](https://neos.com/) that adds some buttons to inspector ui for components that have callable delgates.
 
-has some config options for what types of delegates should create a button in the inspector. you may want to use a mod like (badhaloninja/NeosModSettings/)[https://github.com/badhaloninja/NeosModSettings/] to edit these options in game.
+has some config options for what types of delegates should create a button in the inspector. you may want to use a mod like [badhaloninja/NeosModSettings/](https://github.com/badhaloninja/NeosModSettings/) to edit these options in game.
 
 ## Installation
 1. Install [NeosModLoader](https://github.com/zkxs/NeosModLoader).
