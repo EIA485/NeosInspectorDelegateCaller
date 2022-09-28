@@ -1,6 +1,6 @@
 # InspectorDelegateCaller
 
-A [NeosModLoader](https://github.com/zkxs/NeosModLoader) mod for [Neos VR](https://neos.com/) that add some buttons to inspector ui for components that have callable delgates.
+A [NeosModLoader](https://github.com/zkxs/NeosModLoader) mod for [Neos VR](https://neos.com/) that adds some buttons to inspector ui for components that have callable delgates.
 
 ## Installation
 1. Install [NeosModLoader](https://github.com/zkxs/NeosModLoader).
