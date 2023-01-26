@@ -6,9 +6,6 @@ using NeosModLoader;
 using FrooxEngine;
 using FrooxEngine.UIX;
 using BaseX;
-using static System.Net.Mime.MediaTypeNames;
-using System.Text;
-using System.Collections.Generic;
 
 namespace InspectorDelegateCaller
 {
