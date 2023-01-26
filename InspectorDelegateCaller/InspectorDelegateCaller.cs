@@ -21,7 +21,10 @@ namespace InspectorDelegateCaller
 		[AutoRegisterConfigKey] static ModConfigurationKey<bool> Key_ArgAction = new("argActions", "show any action with arguments in inspectors", () => true);
 		[AutoRegisterConfigKey] static ModConfigurationKey<bool> Key_Buttons = new("buttons", "show callable buttons in inspectors", () => false);
 		[AutoRegisterConfigKey] static ModConfigurationKey<bool> Key_ArgButtons = new("argButtons", "show any button with arguments in inspectors", () => true);
+
+		[AutoRegisterConfigKey] static ModConfigurationKey<bool> Key_ShowSlotDestroy = new("showSlotDestroy", "show the slot destroy button in inspectors", () => true);
 		static ModConfiguration config;
+
 		public override void OnEngineInit()
 		{
 			config = GetConfiguration();
@@ -34,9 +37,11 @@ namespace InspectorDelegateCaller
 		{
 			static void Postfix(Worker worker, UIBuilder ui)
 			{
+
 				foreach (var m in worker.GetType().GetMethods(BindingFlags.FlattenHierarchy | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static))
 				{
 					var param = m.GetParameters();
+
 					if (m.ReturnType == typeof(void))
 					{
 						switch (param.Length)
@@ -45,6 +50,10 @@ namespace InspectorDelegateCaller
 								if (m.CustomAttributes.Any((a) => (a.AttributeType == typeof(SyncMethod) && config.GetValue(Key_Action)) || (a.AttributeType.BaseType == typeof(SyncMethod) && config.GetValue(Key_SubAction))))
 								{
 									LocaleString str = m.Name;
+
+									// check for the slot destroy button
+									if (str == "Destroy" && worker.GetType().FullName == "FrooxEngine.Slot" && config.GetValue(Key_ShowSlotDestroy) == false) break;
+
 									var b = ui.Button(in str);
 									b.Slot.AttachComponent<ButtonActionTrigger>().OnPressed.Target = (Action)m.CreateDelegate(typeof(Action), worker);
 								}
