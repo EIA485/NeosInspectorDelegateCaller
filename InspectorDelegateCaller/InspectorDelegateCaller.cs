@@ -41,7 +41,7 @@ namespace InspectorDelegateCaller
 			ArgButtons = Config.Bind(PluginMetadata.NAME, "argButtons", true, "show any button with arguments in inspectors");
 			FallBack = Config.Bind(PluginMetadata.NAME, "fallBack", true, "show any other delegate with arguments in inspectors");
 			DefaultArgState = Config.Bind(PluginMetadata.NAME, "defaultArgState", true, "default arg inputs visable");
-			BlockerRegex = Config.Bind(PluginMetadata.NAME, "blockerRegex", "^((Slot|StaticGaussianSplat|VideoTextureProvider|MeshRenderer|FingerReferencePoseSource)\\.|((StaticTexture\\dD\\.|StaticTextureProvider.*?\\.)(Invert|Swap|Rotate|Flip|Tile|Adjust|Alpha|Grayscale|ShiftHue|Resize|MakeSquare|ToNearestPOT|InvalidFloats|GenerateBitmapMetadata|ReplaceFromClipboard|Trim[a-zA-Z]|(?!Color).*?Alpha(\\[| )|Normalize[a-zA-Z]|.*?(White|Black).*?\\[))|.+?\\.(((On)?Bake)(.*?(\\[IButton, ButtonEventData\\])|[a-zA-Z]*?$)|OnSetupRenderer)|ProceduralTexture3DBase\\.OnSpawnVisualizer|StaticAudioClip\\.[^A]|ProtoFluxNode\\.OnDumpStructure|SkinnedMeshRenderer\\.(SortBlendshapesBy|Visualize|StripEmpty|ExtendExplicitBoundsFromPose|ComputeExplicitBoundsFromPose|MergeBlendshapes|SeparateOutBlendshapes|ClearBoundsVisuals|ResetBonesToBindPoses))", "regex string that defines what delegates to skip"); //reasonable default filter
+			BlockerRegex = Config.Bind(PluginMetadata.NAME, "blockerRegex", "^(static )?(public |private (protected )?|protected (internal )?|internal )?((Slot|StaticGaussianSplat|VideoTextureProvider|MeshRenderer|FingerReferencePoseSource)\\.|((StaticTexture\\dD\\.|StaticTextureProvider.*?\\.)(Invert|Swap|Rotate|Flip|Tile|Adjust|Alpha|Grayscale|ShiftHue|Resize|MakeSquare|ToNearestPOT|InvalidFloats|GenerateBitmapMetadata|ReplaceFromClipboard|Trim[a-zA-Z]|(?!Color).*?Alpha(\\[| )|Normalize[a-zA-Z]|.*?(White|Black).*?\\[))|.+?\\.(((On)?Bake)(.*?(\\[IButton, ButtonEventData\\])|[a-zA-Z]*?$)|OnSetupRenderer)|ProceduralTexture3DBase\\.OnSpawnVisualizer|StaticAudioClip\\.[^A]|ProtoFluxNode\\.OnDumpStructure|SkinnedMeshRenderer\\.(SortBlendshapesBy|Visualize|StripEmpty|ExtendExplicitBoundsFromPose|ComputeExplicitBoundsFromPose|MergeBlendshapes|SeparateOutBlendshapes|ClearBoundsVisuals|ResetBonesToBindPoses))", "regex string that defines what delegates to skip"); //reasonable default filter
 			RegexDebuging = Config.Bind(PluginMetadata.NAME, "regexDebug", false, "log each time regex is used and what if anything matched");
 			DisableCustomRegex = Config.Bind(PluginMetadata.NAME, "customInspectorDisableRegex", "PBS_Slice|AudioZitaReverb|PagingControl|DataPreset|RootSpace|MazeGenerator|HapticManager|PhysicalLocomotion|.*?Collider|DynamicBoneChain|GridContainer|DataFeedItemMapper|RootCategoryView|BreadcrumbManager|Workspace|AmbientLightSH2|Animator|DirectVisemeDriver|MaterialSet|GaussianSplatRenderer|Rig|Skybox|BipedRig|HandPoser|BooleanSwitcher|LookAt|DynamicBlendShapeDriver|ObjectRoot|ScaleObjectManager|CommonAvatarBuilder|SimpleAwayIndicatoCubemapCreator|SettingComponent|ItemTextureThumbnailSource|AvatarExpressionDriver|EyeRotationDriver\\+Eye|SimpleAvatarProtection|PhotonDust\\+.*?Lifetime|VRIKAvatar", "regex string that defines what workers should use the default inspector generation"); //default filter just blocks customInspectors only adding their own buttons
 			DisableHeaderText = Config.Bind(PluginMetadata.NAME, "disableHeaderText", false, "Disables the warning text some components have after the header");
@@ -133,9 +133,17 @@ namespace InspectorDelegateCaller
 					var param = m.GetParameters();
 					if (param.Length > 8) return;
 
-					string args = param.Length > 0 ? '[' + string.Join(", ", param.Select(p => p.ParameterType.Name)) + ']' : "";
+					string isstatic = m.IsStatic ? "static " : "";
+					string visability = "";
+					if (m.IsPublic) visability = "public ";
+					else if (m.IsPrivate) visability = "private ";
+					else if (m.IsFamily) visability = "protected ";
+					else if (m.IsAssembly) visability = "internal ";
+                    else if (m.IsFamilyAndAssembly) visability = "private protected ";
+                    else if (m.IsFamilyOrAssembly) visability = "protected internal ";
+                    string args = param.Length > 0 ? '[' + string.Join(", ", param.Select(p => p.ParameterType.Name)) + ']' : "";
 					string mret = m.ReturnType != typeof(void) ? $" : {m.ReturnType.GetNiceName()}" : "";
-					string fullName = $"{m.DeclaringType.GetNiceName()}.{m.Name}{args}{mret}";
+					string fullName = $"{isstatic}{visability}{m.DeclaringType.GetNiceName()}.{m.Name}{args}{mret}";
 
 
 					if (IsMatch(BlockerRegex, blocRegex, fullName)) continue;
