@@ -1,0 +1,42 @@
+# This file is used by the Thunderstore CLI to build and publish to Thunderstore. https://github.com/thunderstore-io/thunderstore-cli
+
+[config]
+schemaVersion = "0.0.1"
+
+[package]
+namespace = "eia485"
+name = "InspectorDelegateCaller"
+versionNumber = "2.1.0"
+description = "adds buttons to inspectors for components that have callable delgates." # max 250 characters
+websiteUrl = "http://github.com/EIA485/NeosInspectorDelegateCaller"
+containsNsfwContent = false
+
+[package.dependencies] 
+ResoniteModding-BepisLoader = "1.3.1"
+
+[build]
+icon = "icon.png"
+readme = "README.md"
+outdir = "build"
+
+# Copy the compiled DLL to the plugins folder in mod package
+[[build.copy]]
+source = "InspectorDelegateCaller/bin/Release/net9.0/InspectorDelegateCaller.dll"
+target = "plugins/"
+
+# Include PDB
+[[build.copy]]
+source = "InspectorDelegateCaller/bin/Release/net9.0/InspectorDelegateCaller.pdb"
+target = "plugins/"
+
+# include LICENSE file in mod package
+[[build.copy]]
+source = "license.txt"
+target = "/"
+
+[publish]
+repository = "https://thunderstore.io"
+communities = ["resonite"]
+
+[publish.categories]
+resonite = [ "mods", "inspectors" ] # https://thunderstore.io/api/experimental/community/resonite/category/
